@@ -13,11 +13,14 @@
   "description": "",
   "dependencies": {
     "@types/amqplib": "^0.10.6",
+    "@types/express": "^5.0.0",
     "@types/node": "^22.13.1",
     "@types/pg": "^8.11.11",
     "@types/redis": "^4.0.10",
     "amqplib": "^0.10.5",
+    "express": "^4.21.2",
     "kafkajs": "^2.2.4",
+    "p-defer": "^4.0.1",
     "pg": "^8.13.1",
     "redis": "^4.7.0"
   },

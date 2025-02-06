@@ -11,7 +11,7 @@ export class KafkaWrapper {
             sasl: config.sasl || {
                 mechanism: 'plain',
                 username: 'user1',
-                password: 'KPQDXG5OkQ'
+                password: 'kafka123'
             },
             ssl: config.ssl || false
         };

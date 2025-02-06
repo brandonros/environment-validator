@@ -17,6 +17,16 @@ export class RabbitMQWrapper {
         try {
             this.connection = await amqp.connect(this.config.url);
             this.channel = await this.connection.createChannel();
+            
+            // Add error handlers
+            this.connection.on('error', (err) => {
+                console.error('RabbitMQ Connection Error:', err);
+            });
+            
+            this.channel.on('error', (err) => {
+                console.error('RabbitMQ Channel Error:', err);
+            });
+            
             console.log('RabbitMQ connected');
             return this;
         } catch (error) {
