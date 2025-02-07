@@ -5,6 +5,7 @@ import { RabbitMQConsumerWrapper } from '../lib/RabbitMQConsumerWrapper'
 import { RabbitMQProducerWrapper } from '../lib/RabbitMQProducerWrapper'
 import { KafkaConsumerWrapper } from '../lib/KafkaConsumerWrapper'
 import { KafkaProducerWrapper } from '../lib/KafkaProducerWrapper'
+import { S3Wrapper } from '../lib/S3Wrapper'
 import { createTimeout } from '../lib/utilities'
 
 export class HealthService {
@@ -13,7 +14,8 @@ export class HealthService {
             this.checkPostgres(),
             this.checkRedis(),
             this.checkKafka(),
-            this.checkRabbitMQ()
+            this.checkRabbitMQ(),
+            this.checkS3()
         ])
         console.log('Services connected')
     }
@@ -21,7 +23,6 @@ export class HealthService {
     private async checkPostgres(): Promise<void> {
         console.log('PostgreSQL connecting...')
         const pg = new PostgresWrapper()
-        await pg.connect()
         const result = await pg.query('SELECT 1')
         console.log('PostgreSQL connected:', result)
     }
@@ -33,6 +34,8 @@ export class HealthService {
         console.log('Redis connected')
         const redisResult = await redis.get('test')
         console.log('Redis result:', redisResult)
+        await redis.disconnect()
+        console.log('Redis disconnected')
     }
 
     private async checkKafka(): Promise<void> {
@@ -61,6 +64,10 @@ export class HealthService {
         // Wait for the consumer to receive the message
         const receivedMessage = await Promise.race([messageReceived.promise, timeout]);
         console.log('Message flow verified:', receivedMessage);
+
+        await kafkaConsumer.disconnect()
+        await kafkaProducer.disconnect()
+        console.log('Kafka disconnected')
     }
 
     private async checkRabbitMQ(): Promise<void> {
@@ -88,11 +95,22 @@ export class HealthService {
         console.log('RabbitMQ consumer consumed')
 
         console.log('RabbitMQ producer publishing...')
-        await rabbitmqProducer.sendMessage('my_exchange3', 'my_routing_key3', 'Hello World!')
+        await rabbitmqProducer.publishToExchange('my_exchange3', 'my_routing_key3', 'Hello World!')
         console.log('RabbitMQ producer published')
 
         // Wait for the consumer to receive the message
         const receivedMessage = await Promise.race([messageReceived.promise, timeout]);
         console.log('Message flow verified:', receivedMessage);
+
+        await rabbitmqConsumer.disconnect()
+        await rabbitmqProducer.disconnect()
+        console.log('RabbitMQ disconnected')
+    }
+
+    private async checkS3(): Promise<void> {
+        console.log('Checking S3...')
+        const s3 = new S3Wrapper()
+        const files = await s3.listFiles()
+        console.log('S3 files:', files)
     }
 }

@@ -23,6 +23,10 @@ export class RedisWrapper {
         }
     }
 
+    async disconnect() {
+        await this.client.disconnect()
+    }
+
     async get(key: string) {
         return await this.client.get(key)
     }

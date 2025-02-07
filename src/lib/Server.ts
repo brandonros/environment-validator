@@ -1,5 +1,6 @@
 import express, { Application } from "express";
 import { Router } from "./Router";
+import { errorHandler } from "../middleware/ExceptionMiddleware";
 
 export class Server {
     private readonly app: Application;
@@ -15,6 +16,7 @@ export class Server {
 
     private initializeMiddleware(): void {
         this.app.use(express.json());
+        this.app.use(errorHandler);
     }
 
     private initializeRoutes(): void {

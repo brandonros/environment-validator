@@ -1,5 +1,6 @@
 import { KafkaWrapper } from "./KafkaWrapper";
 import { Consumer } from "kafkajs";
+
 export class KafkaConsumerWrapper extends KafkaWrapper {
     consumer: Consumer;
     groupId: string;

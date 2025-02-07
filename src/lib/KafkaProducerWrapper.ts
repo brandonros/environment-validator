@@ -4,13 +4,11 @@ import { KafkaWrapper } from "./KafkaWrapper";
 export class KafkaProducerWrapper extends KafkaWrapper {
     producer: Producer;
     isConnected: boolean;
-    messageInterval: NodeJS.Timeout | null;
     
     constructor(config = {}) {
         super(config);
         this.producer = this.kafka.producer();
         this.isConnected = false;
-        this.messageInterval = null;
     }
 
     async connect() {
@@ -59,35 +57,6 @@ export class KafkaProducerWrapper extends KafkaWrapper {
         } catch (error) {
             console.error('Failed to send message:', error);
             throw error;
-        }
-    }
-
-    async startPeriodicMessages(interval = 1000) {
-        let messageCount = 1;
-        
-        this.messageInterval = setInterval(async () => {
-            const message = {
-                value: `Message ${messageCount} at ${new Date().toISOString()}`,
-                key: `key-${messageCount}`
-            };
-            
-            try {
-                await this.sendMessage(message.value, message.key);
-                messageCount++;
-            } catch (error) {
-                console.error('Error in periodic message:', error);
-
-                if (this.messageInterval) {
-                    clearInterval(this.messageInterval);
-                }
-            }
-        }, interval);
-    }
-
-    stopPeriodicMessages() {
-        if (this.messageInterval) {
-            clearInterval(this.messageInterval);
-            console.log('Stopped periodic messages');
         }
     }
 }

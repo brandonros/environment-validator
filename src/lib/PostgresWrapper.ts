@@ -13,11 +13,6 @@ export class PostgresWrapper {
         })
     }
 
-    async connect() {
-        await this.pool.connect()
-        return this
-    }
-
     async query(sql: string, params?: any[]) {
         const result = await this.pool.query(sql, params)
         return result.rows
